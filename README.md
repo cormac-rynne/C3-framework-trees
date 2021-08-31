@@ -1,3 +1,14 @@
+Code based on C-3 framework (https://github.com/gjy3035/C-3-Framework)
+
+Modified to include:
+* Models
+    * Original.py
+    * Smaller.py
+* Dataset loaders
+    * oil palm
+    * blan
+    * london
+
 # **C**rowd **C**ounting **C**ode Framework (C^3-Framework) 
 
 # Python 3 dev version!

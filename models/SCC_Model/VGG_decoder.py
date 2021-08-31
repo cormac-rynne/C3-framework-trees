@@ -17,19 +17,19 @@ class VGG_decoder(nn.Module):
         features = list(vgg.features.children())
         self.features4 = nn.Sequential(*features[0:23])
 
-
-        self.de_pred = nn.Sequential(Conv2d( 512, 128, 3, same_padding=True, NL='relu'),
-                                    nn.ConvTranspose2d(128,64,4,stride=2,padding=1,output_padding=0,bias=True),
-                                    nn.ReLU(),
-                                    nn.ConvTranspose2d(64,32,4,stride=2,padding=1,output_padding=0,bias=True),
-                                    nn.ReLU(),
-                                    nn.ConvTranspose2d(32,16,4,stride=2,padding=1,output_padding=0,bias=True),
-                                    nn.ReLU(),
-                                    Conv2d(16, 1, 1, same_padding=True, NL='relu'))
+        self.de_pred = nn.Sequential(
+            Conv2d(512, 128, 3, same_padding=True, NL='relu'),
+            nn.ConvTranspose2d(128,64,kernel_size=4,stride=2,padding=1,output_padding=0,bias=True),
+            nn.ReLU(),
+            nn.ConvTranspose2d(64,32,kernel_size=4,stride=2,padding=1,output_padding=0,bias=True),
+            nn.ReLU(),
+            nn.ConvTranspose2d(32,16,kernel_size=4,stride=2,padding=1,output_padding=0,bias=True),
+            nn.ReLU(),
+            Conv2d(16, 1, 1, same_padding=True, NL='relu')
+        )
 
 
     def forward(self, x):
         x = self.features4(x)       
         x = self.de_pred(x)
-
         return x

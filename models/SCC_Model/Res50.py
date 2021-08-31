@@ -15,9 +15,6 @@ class Res50(nn.Module):
     def __init__(self,  pretrained=True):
         super(Res50, self).__init__()
 
-        self.de_pred = nn.Sequential(Conv2d(1024, 128, 1, same_padding=True, NL='relu'),
-                                     Conv2d(128, 1, 1, same_padding=True, NL='relu'))
-
         initialize_weights(self.modules())
 
         res = models.resnet50(pretrained=pretrained)
@@ -28,6 +25,9 @@ class Res50(nn.Module):
         )
         self.own_reslayer_3 = make_res_layer(Bottleneck, 256, 6, stride=1)        
         self.own_reslayer_3.load_state_dict(res.layer3.state_dict())
+
+        self.de_pred = nn.Sequential(Conv2d(1024, 128, 1, same_padding=True, NL='relu'),
+                                     Conv2d(128, 1, 1, same_padding=True, NL='relu'))
 
         
 
@@ -107,7 +107,7 @@ class Bottleneck(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
-
+        print(out.shape, residual.shape)
         out += residual
         out = self.relu(out)
 

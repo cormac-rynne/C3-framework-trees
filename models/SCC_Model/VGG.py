@@ -17,7 +17,6 @@ class VGG(nn.Module):
         features = list(vgg.features.children())
         self.features4 = nn.Sequential(*features[0:23])
 
-
         self.de_pred = nn.Sequential(Conv2d(512, 128, 1, same_padding=True, NL='relu'),
                                      Conv2d(128, 1, 1, same_padding=True, NL='relu'))
 

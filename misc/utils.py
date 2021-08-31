@@ -11,6 +11,7 @@ from torch import nn
 
 import torchvision.utils as vutils
 import torchvision.transforms as standard_transforms
+from datetime import datetime
 
 import pdb
 
@@ -58,24 +59,29 @@ def weights_normal_init(*models):
 
 
 def logger(exp_path, exp_name, work_dir, exception, resume=False):
-
+    # print(f'{datetime.today()} logger start')
     from tensorboardX import SummaryWriter
     
     if not os.path.exists(exp_path):
         os.mkdir(exp_path)
-    writer = SummaryWriter(exp_path+ '/' + exp_name)
+
+    folder_path = os.path.join(exp_path, exp_name)
+    # print(f'{datetime.today()} writer creation start')
+    writer = SummaryWriter(folder_path)
     log_file = exp_path + '/' + exp_name + '/' + exp_name + '.txt'
-    
+
+
     cfg_file = open('./config.py',"r")  
     cfg_lines = cfg_file.readlines()
     
     with open(log_file, 'a') as f:
         f.write(''.join(cfg_lines) + '\n\n\n\n')
 
+    # print(f'{datetime.today()} copy cur env start')
     if not resume:
         copy_cur_env(work_dir, exp_path+ '/' + exp_name + '/code', exception)
-
-
+    # print(f'{datetime.today()} copy cur env end')
+    # print(f'Logged: {folder_path}')
     return writer, log_file
 
 
@@ -235,20 +241,25 @@ def update_model(net,optimizer,scheduler,epoch,i_tb,exp_path,exp_name,scores,tra
 
 
 def copy_cur_env(work_dir, dst_dir, exception):
-
+    # print(f'{datetime.today()} copycurenvfunc start')
+    # print(work_dir, dst_dir)
     if not os.path.exists(dst_dir):
         os.mkdir(dst_dir)
-
+    # print(len(os.listdir(work_dir)))
     for filename in os.listdir(work_dir):
+        if filename == 'results':
+            continue
+        # print(filename)
 
         file = os.path.join(work_dir,filename)
         dst_file = os.path.join(dst_dir,filename)
-
 
         if os.path.isdir(file) and exception not in filename:
             shutil.copytree(file, dst_file)
         elif os.path.isfile(file):
             shutil.copyfile(file,dst_file)
+    # print(f'{datetime.today()} copycurenvfunc end')
+
 
 
 

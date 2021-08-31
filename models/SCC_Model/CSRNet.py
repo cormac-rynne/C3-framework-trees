@@ -6,21 +6,28 @@ import torch.nn.functional as F
 class CSRNet(nn.Module):
     def __init__(self, load_weights=False):
         super(CSRNet, self).__init__()
+        print('CSRNet')
         self.seen = 0
         self.frontend_feat = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512]
         self.backend_feat  = [512, 512, 512,256,128,64]
-        self.frontend = make_layers(self.frontend_feat)
-        self.backend = make_layers(self.backend_feat,in_channels = 512,dilation = True)
+        self.frontend = make_layers(self.frontend_feat, batch_norm=False)
+        self.backend = make_layers(self.backend_feat,in_channels=512,dilation=True, batch_norm=False)
         self.output_layer = nn.Conv2d(64, 1, kernel_size=1)
         if not load_weights:
             mod = models.vgg16(pretrained = True)
             self._initialize_weights()
             self.frontend.load_state_dict(mod.features[0:23].state_dict())
+
     def forward(self,x):
+        # print('pre frontend', x.shape)
         x = self.frontend(x)
+        # print('pre backend', x.shape)
         x = self.backend(x)
+        # print('pre output layer', x.shape)
         x = self.output_layer(x)
-        x = F.upsample(x,scale_factor=8)
+        # print('pre upsample', x.shape)
+        x = F.interpolate(x,scale_factor=8, mode='bilinear', align_corners=False)
+        # print('post upsample', x.shape)
         return x
     def _initialize_weights(self):
         for m in self.modules():
